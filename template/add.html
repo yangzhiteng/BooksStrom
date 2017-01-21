@@ -1,0 +1,17 @@
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="bookName" class="control-label">书名</label>
+        <input type="text" id="bookName" class="form-control" placeholder="请输入要查找的书名" ng-model="book.bookName">
+    </div>
+    <div class="form-group">
+        <label for="bookPrice" class="control-label">价格</label>
+        <input type="text" id="bookPrice" class="form-control" placeholder="请输入价格" ng-model="book.bookPrice">
+    </div>
+    <div class="form-group">
+        <label for="bookCover" class="control-label">封面</label>
+        <input type="text" id="bookCover" class="form-control" placeholder="封面" ng-model="book.bookCover">
+    </div>
+    <div class="form-group">
+        <button class="btn btn-warning" ng-click="add()">添加</button>
+    </div>
+</form>

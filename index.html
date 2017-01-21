@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="appModule">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+<div class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a href="#!/home" class="navbar-brand">BookStrom</a>
+        </div>
+        <div>
+            <ul class="navbar-nav nav">
+                <li><a href="#!/home">首页</a></li>
+                <li><a href="#!/list">列表页</a></li>
+                <li><a href="#!/add">新增图书</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div ng-view class="container"></div>
+<script src="node_modules/jquery/dist/jquery.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+<script src="node_modules/angular/angular.js"></script>
+<script src="node_modules/angular-resource/angular-resource.js"></script>
+<script src="node_modules/angular-route/angular-route.js"></script>
+<script>
+    var app = angular.module('appModule', ['ngResource', 'ngRoute']);
+    app.factory('Books', function ($resource) {
+        return $resource('/books/:bid', null, {
+            update: {method: 'PUT'}
+        })
+    });
+    app.config(function ($routeProvider) {
+        $routeProvider.when('/home', {
+            templateUrl: 'template/home.html',
+            controller: 'homeCtrl'
+        }).when('/list', {
+            templateUrl: 'template/list.html',
+            controller: 'listCtrl'
+        }).when('/add', {
+            templateUrl: 'template/add.html',
+            controller: 'addCtrl'
+        }).when('/detail/:bid', {
+            templateUrl: 'template/detail.html',
+            controller: 'detailCtrl'
+        }).otherwise('/home')
+    });
+    app.controller('homeCtrl', function ($scope, $sce) {
+        $scope.home = $sce.trustAsHtml('<h1>欢迎来购书</h1>');
+        $('.carousel').carousel()
+    });
+    app.controller('listCtrl', function ($scope, Books) {
+        $scope.booksList = Books.query();
+    });
+    app.controller('addCtrl', function ($scope, Books, $location) {
+        $scope.add = function () {
+            Books.save($scope.book).$promise.then(function () {
+                $location.path('/list')
+            })
+        }
+    });
+    app.controller('detailCtrl', function ($scope, Books, $routeParams, $location) {
+        var id = $routeParams.bid;
+        $scope.book = Books.get({bid: id});
+        $scope.flag = true;
+        $scope.remove = function () {
+            Books.delete({bid: id}).$promise.then(function () {
+                $location.path('/list')
+            })
+        };
+        $scope.change = function () {
+            $scope.flag = false;
+        };
+        $scope.update = function () {
+            $scope.flag = true;
+            Books.update({bid: id}, $scope.book).$promise.then(function () {
+                $location.path('/list')
+            })
+        }
+    })
+</script>
+</body>
+</html>
